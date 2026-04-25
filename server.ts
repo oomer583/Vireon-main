@@ -17,17 +17,25 @@ if (!fs.existsSync(PROJECTS_FILE)) {
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
 
   app.use(express.json({ limit: '50mb' }));
   app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   // API Routes
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   app.get("/api/projects", (req, res) => {
     try {
+      if (!fs.existsSync(PROJECTS_FILE)) {
+        return res.json([]);
+      }
       const data = fs.readFileSync(PROJECTS_FILE, "utf-8");
       res.json(JSON.parse(data));
     } catch (error) {
+      console.error("Fetch projects error:", error);
       res.status(500).json({ error: "Projeler okunamadı" });
     }
   });
@@ -106,6 +114,11 @@ async function startServer() {
     } catch (error) {
       res.status(500).json({ error: "Proje güncellenemedi" });
     }
+  });
+
+  // API 404 handler - MUST be after all API routes but before Vite/fallback
+  app.use("/api/*", (req, res) => {
+    res.status(404).json({ error: `API route not found: ${req.originalUrl}` });
   });
 
   // Vite middleware for development

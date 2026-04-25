@@ -151,10 +151,21 @@ export default function App() {
   const fetchProjects = async () => {
     try {
       const response = await fetch('/api/projects');
-      const data = await response.json();
-      setProjects(data);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const text = await response.text();
+      try {
+        const data = JSON.parse(text);
+        setProjects(data);
+      } catch (parseError) {
+        console.error("JSON parse error:", parseError);
+        console.log("Received response (first 100 chars):", text.substring(0, 100));
+        setError("Projeler yüklenirken format hatası oluştu.");
+      }
     } catch (err) {
       console.error("Projeler yüklenemedi", err);
+      setError("Projeler sunucudan alınamadı.");
     }
   };
 
@@ -419,6 +430,11 @@ export default function App() {
           viewport={{ once: true }}
           className="grid md:grid-cols-3 gap-12"
         >
+          {error && (
+            <div className="col-span-3 p-4 bg-red-50 text-red-500 rounded-lg text-center text-sm border border-red-100 mb-4">
+              {error}
+            </div>
+          )}
           {projects.map((project) => (
             <ProjectCard 
               key={project.id} 

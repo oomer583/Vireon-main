@@ -1,0 +1,20 @@
+[
+  {
+    "id": "1",
+    "name": "V-System Helper",
+    "description": "Sisteminizi optimize eden ve gereksiz yüklerden arındıran kontrol merkezi.",
+    "image": "https://academic-jade-93hdrslvab.edgeone.app/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png",
+    "technologies": ["Rust", "Tauri", "React"],
+    "mainLink": "#",
+    "secondaryLink": ""
+  },
+  {
+    "id": "2",
+    "name": "Zen Workspace",
+    "description": "Üretkenliğinizi artıran, minimal çalışma alanı ve not alma uygulaması.",
+    "image": "https://academic-jade-93hdrslvab.edgeone.app/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png",
+    "technologies": ["TypeScript", "Electron", "Tailwind"],
+    "mainLink": "#",
+    "secondaryLink": ""
+  }
+]

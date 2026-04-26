@@ -92,7 +92,7 @@ const Navbar = () => {
             referrerPolicy="no-referrer"
           />
           <span className="text-xl font-bold tracking-tight text-[#1A1A1A]">
-            VIREON <span className="font-light text-gray-500">SYSTEMS</span>
+            VIREON <span className="font-light text-gray-400 ml-1">SYSTEMS</span>
           </span>
         </div>
         
@@ -146,6 +146,15 @@ export default function App() {
   });
 
   useEffect(() => {
+    // Try to load from localStorage first for immediate UI
+    const cached = localStorage.getItem('vireon_projects_cache');
+    if (cached) {
+      try {
+        setProjects(JSON.parse(cached));
+      } catch (e) {
+        console.error("Cache parse error", e);
+      }
+    }
     fetchProjects();
   }, []);
 
@@ -163,6 +172,8 @@ export default function App() {
           return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
         }) : [];
         setProjects(sortedData);
+        // Save to cache
+        localStorage.setItem('vireon_projects_cache', JSON.stringify(sortedData));
       } catch (parseError) {
         console.error("JSON parse error:", parseError);
         setError("Projeler yüklenirken format hatası oluştu.");
@@ -175,7 +186,7 @@ export default function App() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "1234") {
+    if (password === "j4j" || password === "J4J") {
       setIsAdmin(true);
       setShowLoginModal(false);
       setShowAdminPanel(true);
@@ -446,8 +457,21 @@ export default function App() {
             />
           ))}
           {projects.length === 0 && (
-            <div className="col-span-3 text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-              <p className="text-gray-400">Henüz proje eklenmemiş.</p>
+            <div className="col-span-3 py-32 text-center flex flex-col items-center justify-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mb-6 opacity-10"
+              >
+                <img 
+                  src="https://i.ibb.co/C5Hwr6JV/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png" 
+                  alt="Empty Logo" 
+                  className="w-24 h-24 grayscale grayscale-100"
+                  referrerPolicy="no-referrer"
+                />
+              </motion.div>
+              <p className="text-gray-400 font-medium tracking-wide">Henüz proje eklenmemiş.</p>
+              <p className="text-[10px] text-gray-300 mt-2 uppercase tracking-widest">Yeni fikirler yolda.</p>
             </div>
           )}
         </motion.div>

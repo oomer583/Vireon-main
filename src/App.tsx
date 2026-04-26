@@ -86,7 +86,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-10 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <img 
-            src="https://academic-jade-93hdrslvab.edgeone.app/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png" 
+            src="https://i.ibb.co/C5Hwr6JV/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png" 
             alt="Vireon Systems Logo" 
             className="w-8 h-8 object-contain"
             referrerPolicy="no-referrer"
@@ -342,7 +342,7 @@ export default function App() {
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-100/40 rounded-full blur-3xl opacity-30" />
 
               <img 
-                src="https://academic-jade-93hdrslvab.edgeone.app/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png" 
+                src="https://i.ibb.co/C5Hwr6JV/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png" 
                 alt="Vireon Systems Logo" 
                 className="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 filter drop-shadow-2xl"
                 referrerPolicy="no-referrer"
@@ -478,7 +478,7 @@ export default function App() {
       <footer className="bg-black text-white px-10 py-8 flex flex-col md:flex-row items-center justify-between mt-auto relative">
         <div className="flex items-center gap-4">
           <img 
-            src="https://academic-jade-93hdrslvab.edgeone.app/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png" 
+            src="https://i.ibb.co/C5Hwr6JV/a9800aed-6c9d-4361-84a9-45c1ac6fe15f.png" 
             alt="Vireon Systems Logo" 
             className="w-10 h-10 object-contain"
             referrerPolicy="no-referrer"

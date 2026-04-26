@@ -1,20 +1,51 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Vireon Systems - Proje Yönetim Sistemi
 
-# Run and deploy your AI Studio app
+Bu uygulama, dosya tabanlı bir JSON veri tabanı kullanan ve gizli bir admin paneli üzerinden yönetilebilen bir portfolyo sitesidir.
 
-This contains everything you need to run your app locally.
+## Teknik Özellikler
 
-View your app in AI Studio: https://ai.studio/apps/2a936ad3-a76e-4144-a468-08cc8980b587
+- **Frontend:** React + Tailwind CSS + Framer Motion
+- **Backend:** Node.js + Express
+- **Veri Tabanı:** `data/projects.json` (Dosya tabanlı)
 
-## Run Locally
+## Kurulum ve Çalıştırma
 
-**Prerequisites:**  Node.js
+1. Bağımlılıkları yükleyin:
+   ```bash
+   npm install
+   ```
 
+2. Uygulamayı geliştirme modunda başlatın:
+   ```bash
+   npm run dev
+   ```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+3. Tarayıcınızda `http://localhost:3000` adresine gidin.
+
+## Admin Paneli Erişimi
+
+Admin paneline erişmek için:
+1. Sayfanın en altına (Footer) inin.
+2. Sağ alt köşede bulunan çok küçük ve şeffaf kareye tıklayın.
+3. Açılan modalda şifreyi girin: `1234`
+
+## Proje Yapısı
+
+- `server.ts`: Express API rotaları ve dosya işlemleri.
+- `data/projects.json`: Proje verilerinin saklandığı dosya.
+- `src/App.tsx`: Ana uygulama bileşeni ve admin paneli arayüzü.
+
+## Yapılan Değişiklikler
+
+1. **Backend:**
+   - Projelerin `data/projects.json` içinde saklanması sağlandı.
+   - Otomatik klasör ve dosya oluşturma mantığı eklendi.
+   - `id`, `name`, `description`, `image`, `technologies`, `mainLink`, `secondLink`, `createdAt` alanları desteklendi.
+   - API endpointleri (GET, POST, DELETE, PUT) güncellendi.
+
+2. **Frontend:**
+   - Gizli admin butonu ve şifreli giriş (`1234`) eklendi.
+   - Proje ekleme, listeleme ve silme arayüzü oluşturuldu.
+   - Silme işlemi öncesi onay penceresi eklendi.
+   - Sayfa yenilenmeden anlık güncelleme (fetch/state sync) sağlandı.
+   - Resim yükleme ve URL girişi desteği eklendi.

@@ -8,9 +8,13 @@ import { v4 as uuidv4 } from "uuid";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PROJECTS_FILE = path.join(__dirname, "projects.json");
+const DATA_DIR = path.join(__dirname, "data");
+const PROJECTS_FILE = path.join(DATA_DIR, "projects.json");
 
-// Ensure projects file exists
+// Ensure data directory and projects file exist
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
 if (!fs.existsSync(PROJECTS_FILE)) {
   fs.writeFileSync(PROJECTS_FILE, JSON.stringify([], null, 2));
 }
@@ -42,22 +46,31 @@ async function startServer() {
 
   app.post("/api/projects", (req, res) => {
     try {
-      const { name, description, image, technologies, mainLink, secondaryLink } = req.body;
+      const { name, description, image, technologies, mainLink, secondLink } = req.body;
       
       if (!name || !description || !image || !technologies || !mainLink) {
         return res.status(400).json({ error: "Eksik alanlar var" });
       }
 
-      const projects = JSON.parse(fs.readFileSync(PROJECTS_FILE, "utf-8"));
+      let projects = [];
+      if (fs.existsSync(PROJECTS_FILE)) {
+        try {
+          projects = JSON.parse(fs.readFileSync(PROJECTS_FILE, "utf-8"));
+        } catch (e) {
+          console.error("Malformed JSON:", e);
+          projects = [];
+        }
+      }
       
       const newProject = {
         id: uuidv4(),
         name,
         description,
         image,
-        technologies: Array.isArray(technologies) ? technologies : technologies.split(",").map((t: string) => t.trim()),
+        technologies: Array.isArray(technologies) ? technologies : String(technologies).split(",").map((t: string) => t.trim()),
         mainLink,
-        secondaryLink: secondaryLink || ""
+        secondLink: secondLink || "",
+        createdAt: new Date().toISOString()
       };
 
       projects.push(newProject);
@@ -65,6 +78,7 @@ async function startServer() {
       
       res.json(newProject);
     } catch (error) {
+      console.error("Post project error:", error);
       res.status(500).json({ error: "Proje eklenemedi" });
     }
   });
@@ -90,7 +104,7 @@ async function startServer() {
   app.put("/api/projects/:id", (req, res) => {
     try {
       const { id } = req.params;
-      const { name, description, image, technologies, mainLink, secondaryLink } = req.body;
+      const { name, description, image, technologies, mainLink, secondLink } = req.body;
       
       let projects = JSON.parse(fs.readFileSync(PROJECTS_FILE, "utf-8"));
       const index = projects.findIndex((p: any) => String(p.id) === String(id));
@@ -104,9 +118,9 @@ async function startServer() {
         name: name || projects[index].name,
         description: description || projects[index].description,
         image: image || projects[index].image,
-        technologies: Array.isArray(technologies) ? technologies : (technologies ? technologies.split(",").map((t: string) => t.trim()) : projects[index].technologies),
+        technologies: Array.isArray(technologies) ? technologies : (technologies ? String(technologies).split(",").map((t: string) => t.trim()) : projects[index].technologies),
         mainLink: mainLink || projects[index].mainLink,
-        secondaryLink: secondaryLink !== undefined ? secondaryLink : projects[index].secondaryLink
+        secondLink: secondLink !== undefined ? secondLink : projects[index].secondLink
       };
 
       fs.writeFileSync(PROJECTS_FILE, JSON.stringify(projects, null, 2));

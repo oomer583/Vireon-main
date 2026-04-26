@@ -29,7 +29,8 @@ interface Project {
   image: string;
   technologies: string[];
   mainLink: string;
-  secondaryLink?: string;
+  secondLink?: string;
+  createdAt?: string;
 }
 
 const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
@@ -57,12 +58,12 @@ const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
       </div>
       
       <h3 className="text-xl font-bold mb-2 group-hover:text-brand transition-colors">{project.name}</h3>
-      <p className="text-sm text-gray-500 leading-relaxed mb-4">{project.description}</p>
+      <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2">{project.description}</p>
       
       <div className="flex gap-4">
-        <a href={project.mainLink} className="text-sm font-bold border-b border-black hover:border-brand hover:text-brand transition-all pb-0.5">İncele</a>
-        {project.secondaryLink && (
-          <a href={project.secondaryLink} className="text-xs text-gray-400 hover:text-black transition-colors flex items-center">GitHub</a>
+        <a href={project.mainLink} target="_blank" rel="noopener noreferrer" className="text-sm font-bold border-b border-black hover:border-brand hover:text-brand transition-all pb-0.5">İncele</a>
+        {project.secondLink && (
+          <a href={project.secondLink} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-black transition-colors flex items-center">GitHub / Diğer</a>
         )}
       </div>
     </motion.div>
@@ -141,7 +142,7 @@ export default function App() {
     image: "",
     technologies: "",
     mainLink: "",
-    secondaryLink: ""
+    secondLink: ""
   });
 
   useEffect(() => {
@@ -157,10 +158,13 @@ export default function App() {
       const text = await response.text();
       try {
         const data = JSON.parse(text);
-        setProjects(data);
+        // Sort by createdAt desc if possible
+        const sortedData = Array.isArray(data) ? [...data].sort((a, b) => {
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        }) : [];
+        setProjects(sortedData);
       } catch (parseError) {
         console.error("JSON parse error:", parseError);
-        console.log("Received response (first 100 chars):", text.substring(0, 100));
         setError("Projeler yüklenirken format hatası oluştu.");
       }
     } catch (err) {
@@ -184,7 +188,7 @@ export default function App() {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", description: "", image: "", technologies: "", mainLink: "", secondaryLink: "" });
+    setFormData({ name: "", description: "", image: "", technologies: "", mainLink: "", secondLink: "" });
     setEditingId(null);
   };
 
@@ -219,7 +223,7 @@ export default function App() {
       image: project.image,
       technologies: project.technologies.join(", "),
       mainLink: project.mainLink,
-      secondaryLink: project.secondaryLink || ""
+      secondLink: project.secondLink || ""
     });
     setEditingId(project.id);
   };
@@ -648,60 +652,67 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Proje Resmi (Seçin)</label>
-                      <div className="relative">
+                    <div className="space-y-4">
+                     <div>
+                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Resim URL veya Dosya</label>
+                       <div className="flex gap-2">
                         <input 
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                        <div className="w-full bg-gray-50 border border-gray-100 rounded-md px-4 py-3 text-sm flex items-center justify-between text-gray-500">
-                          <span className="truncate">{formData.image ? "Resim Güncellendi/Seçildi" : "Dosya Yükle..."}</span>
-                          <Plus className="w-4 h-4 flex-shrink-0" />
-                        </div>
-                      </div>
-                      {formData.image && (
-                        <div className="mt-2 relative w-20 h-12 rounded border overflow-hidden">
-                          <img src={formData.image} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Teknolojiler (Virgülle)</label>
-                      <input 
-                        required
-                        className="w-full bg-gray-50 border border-gray-100 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
-                        value={formData.technologies}
-                        onChange={(e) => setFormData({...formData, technologies: e.target.value})}
-                        placeholder="React, Rust, Tauri..."
-                      />
-                    </div>
-                  </div>
+                           className="flex-1 bg-gray-50 border border-gray-100 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
+                           value={formData.image}
+                           onChange={(e) => setFormData({...formData, image: e.target.value})}
+                           placeholder="https://...veya dosya seçin"
+                         />
+                         <div className="relative">
+                            <input 
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageChange}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                            <button type="button" className="h-full bg-gray-100 px-3 rounded-md hover:bg-gray-200 transition-colors">
+                              <Plus className="w-4 h-4" />
+                            </button>
+                         </div>
+                       </div>
+                       {formData.image && (
+                         <div className="mt-2 relative w-20 h-12 rounded border overflow-hidden bg-gray-50 shadow-sm">
+                           <img src={formData.image} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                         </div>
+                       )}
+                     </div>
+                     <div>
+                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Teknolojiler (Virgülle)</label>
+                       <input 
+                         required
+                         className="w-full bg-gray-50 border border-gray-100 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
+                         value={formData.technologies}
+                         onChange={(e) => setFormData({...formData, technologies: e.target.value})}
+                         placeholder="React, Rust, Tauri..."
+                       />
+                     </div>
+                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Ana Link</label>
-                      <input 
-                        required
-                        className="w-full bg-gray-50 border border-gray-100 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
-                        value={formData.mainLink}
-                        onChange={(e) => setFormData({...formData, mainLink: e.target.value})}
-                        placeholder="https://..."
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">GitHub Link (Opsiyonel)</label>
-                      <input 
-                        className="w-full bg-gray-50 border border-gray-100 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
-                        value={formData.secondaryLink}
-                        onChange={(e) => setFormData({...formData, secondaryLink: e.target.value})}
-                        placeholder="https://github.com/..."
-                      />
-                    </div>
-                  </div>
+                   <div className="space-y-4">
+                     <div>
+                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">Ana Link</label>
+                       <input 
+                         required
+                         className="w-full bg-gray-50 border border-gray-100 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
+                         value={formData.mainLink}
+                         onChange={(e) => setFormData({...formData, mainLink: e.target.value})}
+                         placeholder="https://..."
+                       />
+                     </div>
+                     <div>
+                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 block">İkinci Link (Opsiyonel)</label>
+                       <input 
+                         className="w-full bg-gray-50 border border-gray-100 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
+                         value={formData.secondLink}
+                         onChange={(e) => setFormData({...formData, secondLink: e.target.value})}
+                         placeholder="https://github.com/..."
+                       />
+                     </div>
+                   </div>
 
                   <div className="col-span-2 pt-4">
                     <button 
